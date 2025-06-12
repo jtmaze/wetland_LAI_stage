@@ -1,0 +1,41 @@
+data/
+# ── Python ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints/
+.venv/
+.env
+# Jupyter Notebook runtime files
+.ipynb_checkpoints/
+# compiled C-extensions
+*.so
+# virtual-env & package managers
+env/
+.venv/
+# poetry / pip-tools / pipenv
+poetry.lock
+Pipfile.lock
+# ── R ───────────────────────────────────────────────
+.Rhistory
+.RData
+.Rproj.user/
+# ── Geospatial data (huge rasters, shapefiles, zips) ─
+*.tif
+*.tiff
+*.img
+*.jp2
+*.hdf
+*.nc
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.gdb
+*.gpkg
+*.zip
+# ── OS & editor cruft ──────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
