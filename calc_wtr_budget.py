@@ -46,7 +46,6 @@ prism['pet'] = (
 prism.drop(columns=['temp_max', 'temp_min', 'delta', 'omega_s', 'dr', 'Ra'], inplace=True)
 
 del k, Gsc, lat_deg, phi, 
-# %%
 
 # plt.plot(prism['date'], prism['pet'])
 # plt.xlabel('Date')
@@ -63,7 +62,7 @@ del k, Gsc, lat_deg, phi,
 # plt.title('Hargreaves PET WY 2022')
 # plt.show()
 
-# %% Calculate mean and cumulative PET and precip
+# %% 4.0 Calculate mean and cumulative PET and precip
 
 # PET rolling calculations
 prism['5d_mean_pet'] = prism['pet'].rolling(window=5, center=False, closed='both').mean()
@@ -101,7 +100,7 @@ prism['20d_cum_precip'] = prism['precip'].rolling(window=20, center=False, close
 # plt.legend()
 # plt.show()
 
-# %% Calculate cummulative water balances
+# %% 5.0 Calculate cummulative water balances
 
 prism['5d_cum_balance'] = prism['5d_cum_precip'] - prism['5d_cum_pet']
 prism['10d_cum_balance'] = prism['10d_cum_precip'] - prism['10d_cum_pet']
@@ -114,4 +113,8 @@ plt.axhline(0, color='grey', linestyle='--', linewidth=0.8, label='Zero Line')  
 plt.legend()
 plt.ylabel('Cummulative value (mm)')
 plt.show()
+# %% 6.0 Write the PRISM data to csv
+
+prism.to_csv('./data/PRISM_water_balance.csv', index=False)
+
 # %%
