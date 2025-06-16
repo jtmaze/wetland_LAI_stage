@@ -102,6 +102,7 @@ prism['20d_cum_precip'] = prism['precip'].rolling(window=20, center=False, close
 
 # %% 5.0 Calculate cummulative water balances
 
+prism['1d_balance'] = prism['precip'] - prism['pet']
 prism['5d_cum_balance'] = prism['5d_cum_precip'] - prism['5d_cum_pet']
 prism['10d_cum_balance'] = prism['10d_cum_precip'] - prism['10d_cum_pet']
 prism['20d_cum_balance'] = prism['20d_cum_precip'] - prism['20d_cum_pet']
