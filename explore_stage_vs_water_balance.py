@@ -17,7 +17,6 @@ wl = pd.read_csv(water_level_path)
 wl['Date'] = pd.to_datetime(wl['Date'])
 
 # Aggregate hourly data to daily
-# For water level, typically we use mean, max, or min depending on your needs
 wl_daily = wl.groupby([wl['Date'].dt.date, 'Site_ID']).agg({
     'revised_depth': 'mean',  # Mean water level for the day
     'flag': 'max',           # Preserve flags (if any day hour has flag, keep it)

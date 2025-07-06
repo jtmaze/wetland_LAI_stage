@@ -132,7 +132,8 @@ for (i in unique_well_ids) {
   change_rate <- unique(temp$change_rate)
   
   if (change_str != 'None') {
-    
+    # Using this mid_date is a placeholder for non LAI change wells
+    mid_date <- 'None'
     # Split the well's LAI data into pre and post logging
     # NOTE: Unsure whether LAI mean or moving average means are better?
     pre <- temp %>% filter(date < change_dt)
@@ -157,6 +158,7 @@ for (i in unique_well_ids) {
   }
   
   lai_magnitude <- post_mean - pre_mean
+  mid_date <- as.character(mid_date)
   
   out <- data.frame(
     well_id=i,
@@ -165,7 +167,8 @@ for (i in unique_well_ids) {
     pre_lai=pre_mean,
     post_lai=post_mean,
     lai_magnitude=lai_magnitude,
-    change_rate=change_rate
+    change_rate=change_rate,
+    lai_split_date=mid_date
   )
   
   well_summaries[[length(well_summaries) + 1]] <- out
