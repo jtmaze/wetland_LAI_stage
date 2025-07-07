@@ -29,7 +29,7 @@ wl_daily['Date'] = pd.to_datetime(wl_daily['Date'])
 # %% 3.0 Filter for the site, clean merge with PRISM
 
 site = '14_610'
-clear_cut_date = pd.Timestamp('2024-01-30')
+clear_cut_date = pd.Timestamp('2023-06-17')
 # Define water balance period as a variable
 wb_period = '10d_cum_balance'  # Can be changed to '5d_cum_balance', '20d_cum_balance', etc.
 
