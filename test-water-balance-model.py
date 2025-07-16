@@ -17,8 +17,19 @@ wl['Date'] = pd.to_datetime(wl['Date'])
 
 # %%
 
+wl['hour'] = wl['Date'].dt.floor('h')
+
+wl_hourly = wl.groupby(['hour', 'Site_ID']).agg(
+    {'water_level': 'mean',
+     'flag': 'sum'}
+).reset_index()
+
+wl_hourly.rename(columns={'hour': 'Date'}, inplace=True)
+
+# %%
+
 wbm = WetlandModel(
-    stage_df=wl,
+    stage_df=wl_hourly,
     Site_ID='6_93',
     source_dem_path='TBD'
 )

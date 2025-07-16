@@ -57,7 +57,8 @@ class WetlandModel:
             h_crit = calc_wetland_hcrit(
                 Site_ID = self.site_id,
                 wetland_hydrograph = self.stage,
-                plot_hydrograph = plot
+                plot_hydrograph = plot, 
+                plot_stage_recession= plot
             )
         elif method == "dem":
             pass
