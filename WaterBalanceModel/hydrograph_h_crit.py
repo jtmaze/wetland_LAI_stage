@@ -8,7 +8,10 @@ def calc_wetland_hcrit(
     Site_ID: str,
     wetland_hydrograph: pd.DataFrame,
     plot_hydrograph: bool,
-    plot_stage_recession: bool
+    plot_stage_recession: bool, 
+    evening_cut: int,
+    morning_cut: int,
+    stage_filter: float
 ):  
 
     if plot_hydrograph:
@@ -38,10 +41,8 @@ def calc_wetland_hcrit(
         plt.tight_layout()
         plt.show()
 
-    evening_cut = 15
-    morning_cut = 11
     # Take above-ground night-time data to calculate recession rate
-    clean = wetland_hydrograph[wetland_hydrograph['water_level'] >= 0.05]
+    clean = wetland_hydrograph[wetland_hydrograph['water_level'] >= stage_filter]
     night_mask = (clean['Date'].dt.hour >= evening_cut) | (clean['Date'].dt.hour <= morning_cut)
     clean = clean[night_mask]
 
@@ -74,7 +75,7 @@ def calc_wetland_hcrit(
                 np.arange(0, morning_cut + 1)  
             ])
 
-        if i % 10_000_000 == 0 and len(combined) > 0:
+        if i % 40 == 0 and len(combined) > 2:
 
             plt.figure(figsize=(8, 5))
             plt.plot(x_indices, combined, 'o', color='black', alpha=0.7)
@@ -113,8 +114,10 @@ def calc_wetland_hcrit(
                 combined
             )
             slope = result.slope
+            p_value = result.pvalue
         else:
             slope = None
+            p_value = None
 
         results_df = pd.concat([
             results_df,
@@ -122,6 +125,7 @@ def calc_wetland_hcrit(
                 'Date': [day.strftime('%Y-%m-%d')],
                 'next_date': [next_day.strftime('%Y-%m-%d')],
                 'slope': [slope],
+                'p_value': [p_value]
             })
         ], ignore_index=True)
 
@@ -131,25 +135,50 @@ def calc_wetland_hcrit(
     daily_wl = wetland_hydrograph.groupby(wetland_hydrograph['Date'].dt.date).agg(
         {'water_level': 'mean'}
     ).reset_index()
-    print(len(daily_wl))
+
     daily_wl = pd.merge(daily_wl, results_df, on='Date', how='left')
 
-    print(daily_wl.head(10))
-    # NOTE: Filtering slopes >= 0
-    daily_wl = daily_wl[daily_wl['slope'] < 0]
 
-    print(daily_wl.head(10))
+    # Filter based on two standard deviations from the mean
+    slope_mean = daily_wl['slope'].mean()
+    slope_std = daily_wl['slope'].std()
+
+    # Keep only values within 2 standard deviations
+    daily_wl = daily_wl[(daily_wl['slope'] >= slope_mean - 2*slope_std) & 
+                        (daily_wl['slope'] <= slope_mean + 2*slope_std)]
+
+    # Keep only negative slopes (recession) with acceptable p-values
+    daily_wl = daily_wl[(daily_wl['slope'] < 0) &
+                        (daily_wl['slope'] * 1_000 >= -1.5)]
+    daily_wl = daily_wl[daily_wl['water_level'] > 0]
+    daily_wl = daily_wl[daily_wl['p_value'] < 0.3]
+    
     if plot_stage_recession:
+        import matplotlib.dates as mdates
+
         plt.figure(figsize=(10, 6))
-        plt.scatter(
+
+        # Convert dates to numerical values for coloring
+        dates = pd.to_datetime(daily_wl['Date'])
+        date_nums = mdates.date2num(dates)
+
+        scatter = plt.scatter(
             daily_wl['water_level'], 
-            daily_wl['slope'],
+            daily_wl['slope'] * 1_000,
+            c=date_nums,
+            cmap='Oranges',
             alpha=0.7,
             edgecolor='k',
             s=50
         )
+
+        # Add colorbar without ticks
+        cbar = plt.colorbar(scatter)
+        cbar.set_label('Date')
+        cbar.set_ticks([])  # Remove ticks and numbers from the colorbar
+
         plt.xlabel('Daily Mean Water Level (meters)')
-        plt.ylabel('Night-time Water Level Recession Rate (m/hr)')
+        plt.ylabel('Night-time Water Level Recession Rate (mm/hr)')
 
         
         

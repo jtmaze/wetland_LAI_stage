@@ -38,6 +38,9 @@ class WetlandModel:
     def calc_hcrit(
             self,
             method: str,
+            evening_cut: int,
+            morning_cut: int,
+            stage_filter: float,
             plot: bool = True
     ):
         """
@@ -58,7 +61,10 @@ class WetlandModel:
                 Site_ID = self.site_id,
                 wetland_hydrograph = self.stage,
                 plot_hydrograph = plot, 
-                plot_stage_recession= plot
+                plot_stage_recession= plot,
+                evening_cut=evening_cut,
+                morning_cut=morning_cut,
+                stage_filter=stage_filter
             )
         elif method == "dem":
             pass

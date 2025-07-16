@@ -5,8 +5,8 @@ import pandas as pd
 
 from WaterBalanceModel.wetland_model import WetlandModel
 
-main_dir = 'D:/wetland_LAI_stage/'
-os.chdir(main_dir)
+# main_dir = '/wetland_LAI_stage/'
+# os.chdir(main_dir)
 
 wl_path = './data/waterlevel_offsets_tracked_Spring2025.csv'
 wl = pd.read_csv(wl_path)
@@ -30,12 +30,16 @@ wl_hourly.rename(columns={'hour': 'Date'}, inplace=True)
 
 wbm = WetlandModel(
     stage_df=wl_hourly,
-    Site_ID='6_93',
+    Site_ID='3_638',
     source_dem_path='TBD'
 )
 
 wbm.calc_hcrit(
     method='hydrograph',
-    plot=True
+    plot=True, 
+    stage_filter=0,
+    evening_cut=23,
+    morning_cut=5
 )
+
 # %%
